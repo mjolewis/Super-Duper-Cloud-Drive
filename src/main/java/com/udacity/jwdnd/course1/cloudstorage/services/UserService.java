@@ -8,7 +8,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 /**********************************************************************************************************************
- * This service handles manages user registration events. The UserController is dependent on the UserService and the
+ * This service manages user registration events. The UserController is dependent on the UserService and the
  * UserService is dependent on the UserMapper.
  *
  * @author Michael Lewis
