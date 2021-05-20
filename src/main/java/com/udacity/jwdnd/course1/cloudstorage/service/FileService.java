@@ -3,6 +3,7 @@ package com.udacity.jwdnd.course1.cloudstorage.service;
 import com.udacity.jwdnd.course1.cloudstorage.mapper.FileMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.SuperDuperFile;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
+import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -42,16 +43,15 @@ public class FileService implements ServiceType {
 
         return superDuperFile;
     }
-//
-//    public UploadResponse upload(SuperDuperFile superDuperFile) {
-//        if (fileMapper.countFiles(superDuperFile) > 0) {
-//            return FAILURE;
-//        } else if (fileMapper.insertFile(superDuperFile) > 0) {
-//            return SUCCESS;
-//        } else {
-//            return ERROR;
-//        }
-//    }
+
+    public boolean insertFile(SuperDuperFile superDuperFile) throws InvalidFileNameException {
+        if (fileMapper.countFiles(superDuperFile) > 0) {
+            throw new InvalidFileNameException(
+                    superDuperFile.getFileName(), "Error. File already exists. Cannot be inserted again.");
+        }
+
+        return fileMapper.insertFile(superDuperFile) == 1;
+    }
 
     public ArrayList<SuperDuperFile> getFiles(User user) {
         return fileMapper.getFiles(user);
