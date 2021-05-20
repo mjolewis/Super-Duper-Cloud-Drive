@@ -13,7 +13,6 @@ import org.openqa.selenium.support.PageFactory;
  * @author Michael Lewis
  *********************************************************************************************************************/
 public class SignupPage {
-    private WebDriver driver;
 
     @FindBy(id = "inputFirstName")
     private WebElement firstname;
@@ -39,11 +38,6 @@ public class SignupPage {
     }
 
     public void signup(String firstname, String lastname, String username, String password) {
-        this.firstname.clear();
-        this.lastname.clear();
-        this.username.clear();
-        this.password.clear();
-
         this.firstname.sendKeys(firstname);
         this.lastname.sendKeys(lastname);
         this.username.sendKeys(username);
