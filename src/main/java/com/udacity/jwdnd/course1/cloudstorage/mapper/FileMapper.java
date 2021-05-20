@@ -21,12 +21,12 @@ public interface FileMapper {
     SuperDuperFile getFile(Integer fileId);
 
     @Select("SELECT COUNT(*) FROM FILES WHERE filename = #{fileName} AND userid = #{userId}")
-    int count(SuperDuperFile file);
+    int countFiles(SuperDuperFile file);
 
     @Insert("INSERT INTO FILES (filename, contenttype, filesize, userid, filedata) " +
             "VALUES(#{fileName}, #{contentType}, #{fileSize}, #{userId}, #{fileData})")
     @Options(useGeneratedKeys = true, keyProperty = "fileId")
-    int insert(SuperDuperFile file);
+    int insertFile(SuperDuperFile file);
 
     @Delete("DELETE FROM FILES WHERE fileid = #{fileId}")
     int deleteFile(Integer fileId);

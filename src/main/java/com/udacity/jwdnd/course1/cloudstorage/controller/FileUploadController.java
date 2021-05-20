@@ -1,11 +1,10 @@
-package com.udacity.jwdnd.course1.cloudstorage.controllers;
+package com.udacity.jwdnd.course1.cloudstorage.controller;
 
 import com.udacity.jwdnd.course1.cloudstorage.model.SuperDuperFile;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
-import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
-import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
-import com.udacity.jwdnd.course1.cloudstorage.services.ValidationService;
-import com.udacity.jwdnd.course1.cloudstorage.utils.UploadResponse;
+import com.udacity.jwdnd.course1.cloudstorage.service.FileService;
+import com.udacity.jwdnd.course1.cloudstorage.service.UserService;
+import com.udacity.jwdnd.course1.cloudstorage.service.ValidationService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Michael Lewis
  *********************************************************************************************************************/
 @Controller
-@RequestMapping("/superDuperFile-upload")
+@RequestMapping("/files")
 public class FileUploadController {
     private final UserService userService;
     private final FileService fileService;
@@ -49,15 +48,15 @@ public class FileUploadController {
         User user = userService.getUser(authentication.getName());
         SuperDuperFile superDuperFile = fileService.prepareFileForUpload(multiPartFile, user);
 
-        UploadResponse uploadResponse = fileService.upload(superDuperFile);
-        switch (uploadResponse) {
-            case SUCCESS:
-                model.addAttribute("uploadSuccess", true);
-            case FAILURE:
-                model.addAttribute("uploadFailure", false);
-            case ERROR:
-                model.addAttribute("uploadError", "Upload error. Please try again.");
-        }
+//        UploadResponse uploadResponse = fileService.upload(superDuperFile);
+//        switch (uploadResponse) {
+//            case SUCCESS:
+//                model.addAttribute("uploadSuccess", true);
+//            case FAILURE:
+//                model.addAttribute("uploadFailure", false);
+//            case ERROR:
+//                model.addAttribute("uploadError", "Upload error. Please try again.");
+//        }
 
         // TODO: 5/2/21 return all files
 

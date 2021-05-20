@@ -5,7 +5,7 @@ package com.udacity.jwdnd.course1.cloudstorage.model;
  *
  * @author Michael Lewis
  *********************************************************************************************************************/
-public interface StoredObject {
+public interface CloudStorageServiceObjet {
     String getType();
     Integer getUserId();
 }
