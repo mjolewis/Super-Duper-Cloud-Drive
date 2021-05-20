@@ -13,7 +13,6 @@ import org.openqa.selenium.support.PageFactory;
  * @author Michael Lewis
  *********************************************************************************************************************/
 public class LoginPage {
-    private WebDriver driver;
 
     @FindBy(id = "inputUsername")
     private WebElement username;
