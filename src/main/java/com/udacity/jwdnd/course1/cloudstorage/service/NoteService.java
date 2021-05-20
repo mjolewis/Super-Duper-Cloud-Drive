@@ -1,4 +1,4 @@
-package com.udacity.jwdnd.course1.cloudstorage.services;
+package com.udacity.jwdnd.course1.cloudstorage.service;
 
 import com.udacity.jwdnd.course1.cloudstorage.mapper.NoteMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.Note;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * @author Michael Lewis
  *********************************************************************************************************************/
 @Service
-public class NoteService {
+public class NoteService implements ServiceType {
     private final NoteMapper noteMapper;
 
     public NoteService(NoteMapper noteMapper) {
@@ -23,5 +23,26 @@ public class NoteService {
 
     public ArrayList<Note> getNotes(User user) {
         return noteMapper.getNotes(user);
+    }
+
+    public Note getNote(Integer noteId) {
+        return noteMapper.getNote(noteId);
+    }
+
+    public boolean insertNote(Note note) {
+        return noteMapper.insertNote(note) > 0;
+    }
+
+    public boolean updateNote(Note note) {
+        return noteMapper.updateNote(note) == 1;
+    }
+
+    public boolean deleteNote(Note note) {
+        return noteMapper.delete(note) == 1;
+    }
+
+    @Override
+    public String getServiceType() {
+        return "notes";
     }
 }

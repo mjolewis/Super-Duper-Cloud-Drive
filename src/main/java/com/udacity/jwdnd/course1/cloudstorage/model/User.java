@@ -5,7 +5,7 @@ package com.udacity.jwdnd.course1.cloudstorage.model;
  *
  * @author Michael Lewis
  *********************************************************************************************************************/
-public class User {
+public class User implements CloudStorageServiceObjet {
     private Integer userId;
     private String username;
     private String salt;
@@ -68,5 +68,10 @@ public class User {
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    @Override
+    public String getType() {
+        return "User";
     }
 }

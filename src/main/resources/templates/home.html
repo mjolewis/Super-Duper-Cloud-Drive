@@ -25,14 +25,14 @@
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
                     <div class="tab-pane fade show active" id="nav-files" role="tabpanel" aria-labelledby="nav-files-tab">
-                        <form id="file-upload" action="#" enctype="multipart/form-data" th:action="@{/superDuperFile-upload}" method="POST">
+                        <form id="file-upload" action="#" enctype="multipart/form-data" th:action="@{/files}" method="POST">
                             <div class="container">
                                 <div class="row" style="margin: 1em;">
                                     <div class="col-sm-2">
                                         <label for="superDuperFileUpload">Upload a New File:</label>
                                     </div>
                                     <div class="col-sm-6">
-                                        <input type="superDuperFile" class="form-control-superDuperFile" id="superDuperFileUpload" name="superDuperFileUpload">
+                                        <input type="file" class="form-control-superDuperFile" id="superDuperFileUpload" name="superDuperFileUpload">
                                     </div>
                                     <div class="col-sm-4">
                                         <button id="fileUploadButton" type="submit" class="btn btn-dark">Upload</button>
@@ -40,7 +40,7 @@
                                 </div>
                             </div>
                         </form>
-                        <div class="table-responsive">
+                        <div th:if="${files.size() > 0}" class="table-responsive">
                             <table class="table table-striped" id="fileTable">
                                 <thead>
                                     <tr>
@@ -49,12 +49,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
+                                <tr th:each="file : ${files}" >
                                     <td>
                                         <a id="viewFileButton" target="_blank" class="btn btn-success">View</a>
                                         <a id="deleteFileButton"  class="btn btn-danger">Delete</a>
                                     </td>
-                                    <th scope="row">ExampleFile.txt</th>
+                                    <th th:text="${file.fileName}" scope="row">ExampleFile.txt</th>
                                 </tr>
                                 </tbody>
                             </table>
@@ -65,8 +65,8 @@
                             + Add a New Note
                         </button>
 
-                        <div class="table-responsive">
-                            <table class="table table-striped" id="userTable">
+                        <div th:if="${notes.size() > 0}" class="table-responsive">
+                            <table class="table table-striped" id="noteTable">
                                 <thead>
                                     <tr>
                                         <th style="width: 20%" scope="col"></th>
@@ -75,13 +75,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <tr id="note-list-item" th:each="note : ${notes}">
                                         <td>
-                                            <button type="button" class="btn btn-success">Edit</button>
-                                            <a class="btn btn-danger">Delete</a>
+                                            <button th:attr="id=${'btn-edit-note-' + note.noteId}" type="button" class="btn btn-success" th:onclick="javascript:showNoteModal([[${note.noteId}]], [[${note.noteTitle}]], [[${note.noteDescription}]])">Edit</button>
+                                            <a th:href="${'/notes/delete?noteId=' + note.noteId}" class="btn btn-danger">Delete</a>
                                         </td>
-                                        <th scope="row">Example Note Title</th>
-                                        <td>Example Note Description </td>
+                                        <th th:text="${note.noteTitle}" scope="row">Example Note Title</th>
+                                        <td th:text="${note.noteDescription}">Example Note Description </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -97,7 +97,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="#" method="POST">
+                                        <form action="#" th:action="@{/notes}" method="POST">
                                             <input type="hidden" name="noteId" id="note-id">
                                             <div class="form-group">
                                                 <label for="note-title" class="col-form-label">Title</label>
@@ -123,7 +123,7 @@
                             + Add a New Credential
                         </button>
 
-                        <div class="table-responsive">
+                        <div th:if="${credentials.size() > 0}" class="table-responsive">
                             <table class="table table-striped" th:object="${credentials}" id="credentialTable">
                                 <thead>
                                     <tr>
@@ -134,14 +134,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
+                                <tr th:each="credential : ${credentials}">
                                     <td>
-                                        <button id="editNote" type="button" class="btn btn-success">Edit</button>
-                                        <a id="deleteNote" class="btn btn-danger">Delete</a>
+                                        <button th:attr="id=${'btn-edit-credential-' + credential.credentialId}" type="button" class="btn btn-success" th:onclick="javascript:showCredentialModal([[${credential.credentialId}]], [[${credential.url}]], [[${credential.username}]], [[${credential.password}]])" >Edit</button>
+                                        <a th:href="${'/credentials/delete?credentialId=' + credential.credentialId}" id="deleteNote" class="btn btn-danger">Delete</a>
                                     </td>
-                                    <th scope="row">Example Credential URL</th>
-                                    <td>Example Credential Username</td>
-                                    <td>Example Credential Password</td>
+                                    <th th:text="${credential.url}" scope="row">Example Credential URL</th>
+                                    <td th:text="${credential.username}">Example Credential Username</td>
+                                    <td th:text="${credential.password}" >Example Credential Password</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -157,7 +157,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="#" method="POST">
+                                        <form action="#" th:action="@{/credentials}" method="POST">
                                             <input type="hidden" name="credentialId" id="credential-id">
                                             <div class="form-group">
                                                 <label for="note-title" class="col-form-label">URL</label>
@@ -208,6 +208,18 @@
                 $('#credential-password').val(password ? password : '');
                 $('#credentialModal').modal('show');
             }
+
+            // Enable link to tab https://bit.ly/2FSND7O
+            var hash = location.hash.replace(/^#/, '');
+            if (hash) {
+                $('.nav-tabs a[href="#' + hash + '"]').tab('show');
+            }
+
+            // Change hash for page reload
+            $('.nav-tabs a').on('shown.bs.tab', function (e) {
+                window.location.hash = e.target.hash;
+            })
+
         </script>
     </body>
 </html>

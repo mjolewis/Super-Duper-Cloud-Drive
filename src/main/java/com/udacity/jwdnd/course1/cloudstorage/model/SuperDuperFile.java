@@ -5,7 +5,7 @@ package com.udacity.jwdnd.course1.cloudstorage.model;
  *
  * @author Michael Lewis
  *********************************************************************************************************************/
-public class SuperDuperFile implements StoredObject {
+public class SuperDuperFile implements CloudStorageServiceObjet {
     private Integer fileId;
     private String fileName;
     private String contentType;

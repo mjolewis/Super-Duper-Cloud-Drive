@@ -1,6 +1,6 @@
-package com.udacity.jwdnd.course1.cloudstorage.services;
+package com.udacity.jwdnd.course1.cloudstorage.service;
 
-import com.udacity.jwdnd.course1.cloudstorage.model.StoredObject;
+import com.udacity.jwdnd.course1.cloudstorage.model.CloudStorageServiceObjet;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -12,7 +12,7 @@ import org.springframework.ui.Model;
  *********************************************************************************************************************/
 @Service
 public class ValidationService {
-    public boolean validate(StoredObject obj, User user, Model model, String crud) {
+    public boolean validate(CloudStorageServiceObjet obj, User user, Model model, String crud) {
         String message = null;
         boolean result = true;
 

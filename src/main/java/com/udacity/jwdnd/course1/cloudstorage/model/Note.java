@@ -1,11 +1,11 @@
 package com.udacity.jwdnd.course1.cloudstorage.model;
 
 /**********************************************************************************************************************
- * Form backing object for file notes on Home.html.
+ * Data model for note objects.
  *
  * @author Michael Lewis
  *********************************************************************************************************************/
-public class Note {
+public class Note implements CloudStorageServiceObjet {
     private Integer noteId;
     private String noteTitle;
     private String noteDescription;
@@ -48,5 +48,10 @@ public class Note {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public String getType() {
+        return "Note";
     }
 }
