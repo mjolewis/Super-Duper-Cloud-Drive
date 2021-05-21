@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -56,8 +57,9 @@ public class HomePage extends WaitPage {
     @FindBy(xpath = EDIT_NOTE_BTN)
     private List<WebElement> editNoteButtons;
 
-    @FindBy(id = "deleteNote")
-    private WebElement deleteNote;
+    private static final String DELETE_NOTE_BTN = "//a[starts-with(@id,'btn-delete-note-')]";
+    @FindBy(xpath = DELETE_NOTE_BTN)
+    private List<WebElement> deleteNoteButtons;
 
     @FindBy(id = "nav-credentials-tab")
     private WebElement credentialsTab;
@@ -70,30 +72,44 @@ public class HomePage extends WaitPage {
     }
 
     public void clickNotesTab(WebDriver driver) {
-        waitForElement(driver, NAV_NOTES_TAB).click();
+        waitForElement(driver, NAV_NOTES_TAB).sendKeys(Keys.ENTER);
     }
 
     public void clickAddNote(WebDriver driver) {
-        waitForElement(driver, ADD_NOTE_BTN).click();;
+        waitForElement(driver, ADD_NOTE_BTN).sendKeys(Keys.ENTER);;
     }
 
     public void clickSaveNote(WebDriver driver, String title, String description) {
         waitForElement(driver, NOTE_TITLE).sendKeys(title);
         waitForElement(driver, NOTE_DESCRIPTION).sendKeys(description);
-        waitForElement(driver, SAVE_NOTE_BTN).click();
+        waitForElement(driver, SAVE_NOTE_BTN).sendKeys(Keys.ENTER);
     }
 
     public String getMostRecentNoteId() {
-        String mostRecentNoteId = null;
-        for (WebElement button : editNoteButtons) {
-            mostRecentNoteId = button.getAttribute("id");
-        }
+        return getMostRecentAddedElementId(editNoteButtons);
+    }
 
-        return mostRecentNoteId;
+    public String getMostRecentDeleteNoteId() {
+        return getMostRecentAddedElementId(deleteNoteButtons);
     }
 
     public void clickEditNoteButton(WebDriver driver, String buttonId) {
         waitForElement(driver, buttonId).click();
+    }
+
+    public void clickDeleteNote(String buttonId) {
+        clickButton(deleteNoteButtons, buttonId);
+    }
+
+    public boolean isNoteDisplayed(String buttonId) {
+        for (WebElement button : editNoteButtons) {
+            String id = button.getAttribute("id");
+            if (id.equals(buttonId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public String find(WebDriver driver, String text) {
@@ -101,6 +117,24 @@ public class HomePage extends WaitPage {
     }
 
     public void logout() {
-        logout.click();
+        logout.sendKeys(Keys.ENTER);
+    }
+
+    private String getMostRecentAddedElementId(List<WebElement> buttons) {
+        String mostRecentId = null;
+        for (WebElement button : buttons) {
+            mostRecentId = button.getAttribute("id");
+        }
+
+        return mostRecentId;
+    }
+
+    private void clickButton(List<WebElement> buttons, String id) {
+        for (WebElement button : buttons) {
+            if (button.getAttribute("id").equals(id)) {
+                button.sendKeys(Keys.ENTER);
+                break;
+            }
+        }
     }
 }

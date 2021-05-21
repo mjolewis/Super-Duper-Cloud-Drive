@@ -30,11 +30,11 @@ class CloudStorageApplicationTests extends WaitPage {
 	@BeforeAll
 	static void beforeAll() {
 		WebDriverManager.chromedriver().setup();
-		driver = new ChromeDriver();
 	}
 
 	@BeforeEach
 	public void beforeEach() {
+		driver = new ChromeDriver();
 		baseURL = "http://localhost:" + port;
 		signupPage = new SignupPage(driver);
 		loginPage = new LoginPage(driver);
@@ -72,7 +72,7 @@ class CloudStorageApplicationTests extends WaitPage {
 		signupPage.signup("John", "Doe", "John", "test");
 
 		driver.get(baseURL + "/login");
-		loginPage.login("John", "test");
+		loginPage.login(driver, "John", "test");
 
 		driver.get(baseURL + "/home");
 		homePage.logout();
@@ -92,20 +92,18 @@ class CloudStorageApplicationTests extends WaitPage {
 		signupPage.signup("John", "Doe", "John", "test");
 
 		driver.get(baseURL + "/login");
-		loginPage.login("John", "test");
+		loginPage.login(driver, "John", "test");
 
 		homePage.clickNotesTab(driver);
 		homePage.clickAddNote(driver);
 		homePage.clickSaveNote(driver, title, description);
 
 		boolean result = resultPage.isSuccessMessageDisplayed(driver);
-		resultPage.clickNavLink(driver);
+		//resultPage.clickNavLink(driver);
 		driver.get(baseURL + "/home");
 		homePage.clickNotesTab(driver);
 		String actualTitle = homePage.find(driver, title);
 		String actualDescription = homePage.find(driver, description);
-
-		homePage.logout();
 
 		assertAll("Save a note",
 				() -> assertTrue(result, "Note was not saved."),
@@ -128,7 +126,7 @@ class CloudStorageApplicationTests extends WaitPage {
 		signupPage.signup("John", "Doe", "John", "test");
 
 		driver.get(baseURL + "/login");
-		loginPage.login("John", "test");
+		loginPage.login(driver, "John", "test");
 
 		homePage.clickNotesTab(driver);
 		homePage.clickAddNote(driver);
@@ -147,16 +145,52 @@ class CloudStorageApplicationTests extends WaitPage {
 		String actualTitle = homePage.find(driver, newTitle);
 		String actualDescription = homePage.find(driver, newDescription);
 
-		homePage.logout();
-
 		assertAll("Edit a note",
 				() -> assertTrue(result, "Note was not saved."),
 				() -> assertEquals(newTitle, actualTitle, "Edited title is incorrect."),
 				() -> assertEquals(newDescription, actualDescription, "Edited description is incorrect"));
 	}
 
-	@AfterAll
-	public static void afterAll() {
+	@Test
+	@DisplayName("Test 2.3 - Delete existing note and verify it's no longer displayed")
+	public void testDeleteNote() {
+		String title = "Test Title";
+		String description = "Test description.";
+
+		driver.get(baseURL + "/signup");
+		signupPage.signup("John", "Doe", "John", "test");
+
+		driver.get(baseURL + "/login");
+		loginPage.login(driver, "John", "test");
+
+		driver.get(baseURL + "/home");
+		homePage.clickNotesTab(driver);
+		homePage.clickAddNote(driver);
+		homePage.clickSaveNote(driver, title, description);
+
+		driver.get(baseURL + "/home");
+		homePage.clickNotesTab(driver);
+		String noteTitle = homePage.find(driver, title);
+		String noteDescription = homePage.find(driver, description);
+
+		String buttonId = homePage.getMostRecentDeleteNoteId();
+		homePage.clickDeleteNote(buttonId);
+		boolean successMessage = resultPage.isSuccessMessageDisplayed(driver);
+
+		resultPage.clickNavLink(driver);
+		driver.get(baseURL + "/home");
+		homePage.clickNotesTab(driver);
+		boolean successfulDelete = homePage.isNoteDisplayed(buttonId);
+
+		assertAll("Delete a note",
+				() -> assertTrue(successMessage, "Success message was not displayed"),
+				() -> assertFalse(successfulDelete, "Note was not deleted."),
+				() -> assertEquals(title, noteTitle, "Note title was never added"),
+				() -> assertEquals(description, noteDescription, "Note description was never added"));
+	}
+
+	@AfterEach
+	public void afterAll() {
 		if (driver != null) {
 			driver.quit();
 		}
