@@ -104,16 +104,55 @@ class CloudStorageApplicationTests extends WaitPage {
 		homePage.clickNotesTab(driver);
 		String actualTitle = homePage.find(driver, title);
 		String actualDescription = homePage.find(driver, description);
+
+		homePage.logout();
+
 		assertAll("Save a note",
 				() -> assertTrue(result, "Note was not saved."),
 				() -> assertEquals(title, actualTitle, "Note title is incorrect."),
 				() -> assertEquals(description, actualDescription, "Description is incorrect"));
+
 	}
 
 	@Test
 	@DisplayName("Test 2.2 - Edit existing note and verify the changes are displayed")
 	public void testEditNote() {
+		String title = "Test Title";
+		String description = "Test description.";
+		String editTitle = "Edit Title";
+		String editDescription = "Edit description";
+		String newTitle = title + editTitle;
+		String newDescription = description + editDescription;
 
+		driver.get(baseURL + "/signup");
+		signupPage.signup("John", "Doe", "John", "test");
+
+		driver.get(baseURL + "/login");
+		loginPage.login("John", "test");
+
+		homePage.clickNotesTab(driver);
+		homePage.clickAddNote(driver);
+		homePage.clickSaveNote(driver, title, description);
+
+		driver.get(baseURL + "/home");
+		homePage.clickNotesTab(driver);
+		String buttonId = homePage.getMostRecentNoteId();
+		homePage.clickEditNoteButton(driver, buttonId);
+		homePage.clickSaveNote(driver, editTitle, editDescription);
+
+		boolean result = resultPage.isSuccessMessageDisplayed(driver);
+		resultPage.clickNavLink(driver);
+		driver.get(baseURL + "/home");
+		homePage.clickNotesTab(driver);
+		String actualTitle = homePage.find(driver, newTitle);
+		String actualDescription = homePage.find(driver, newDescription);
+
+		homePage.logout();
+
+		assertAll("Edit a note",
+				() -> assertTrue(result, "Note was not saved."),
+				() -> assertEquals(newTitle, actualTitle, "Edited title is incorrect."),
+				() -> assertEquals(newDescription, actualDescription, "Edited description is incorrect"));
 	}
 
 	@AfterAll
