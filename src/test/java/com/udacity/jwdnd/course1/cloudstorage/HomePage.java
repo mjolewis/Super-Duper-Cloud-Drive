@@ -5,6 +5,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
+import java.util.List;
+
 /**********************************************************************************************************************
  *
  *
@@ -38,26 +40,21 @@ public class HomePage extends WaitPage {
     @FindBy(id = ADD_NOTE_BTN)
     private WebElement addNewNote;
 
-    private final String NOTE_TITLE = "note-title";
+    private static final String NOTE_TITLE = "note-title";
     @FindBy(id = NOTE_TITLE)
     private WebElement noteTitle;
 
-    private final String NOTE_DESCRIPTION = "note-description";
+    private static final String NOTE_DESCRIPTION = "note-description";
     @FindBy(id = NOTE_DESCRIPTION)
     private WebElement noteDescription;
-
-    @FindBy(id = "dismissNoteModal")
-    private WebElement dismissNoteModal;
-
-    @FindBy(id = "close-note-btn")
-    private WebElement closeNote;
 
     private static final String SAVE_NOTE_BTN = "save-note-btn";
     @FindBy(id = SAVE_NOTE_BTN)
     private WebElement saveNote;
 
-    @FindBy(id = "editNote")
-    private WebElement editNote;
+    private static final String EDIT_NOTE_BTN = "//button[starts-with(@id, 'btn-edit-note-')]";
+    @FindBy(xpath = EDIT_NOTE_BTN)
+    private List<WebElement> editNoteButtons;
 
     @FindBy(id = "deleteNote")
     private WebElement deleteNote;
@@ -84,6 +81,19 @@ public class HomePage extends WaitPage {
         waitForElement(driver, NOTE_TITLE).sendKeys(title);
         waitForElement(driver, NOTE_DESCRIPTION).sendKeys(description);
         waitForElement(driver, SAVE_NOTE_BTN).click();
+    }
+
+    public String getMostRecentNoteId() {
+        String mostRecentNoteId = null;
+        for (WebElement button : editNoteButtons) {
+            mostRecentNoteId = button.getAttribute("id");
+        }
+
+        return mostRecentNoteId;
+    }
+
+    public void clickEditNoteButton(WebDriver driver, String buttonId) {
+        waitForElement(driver, buttonId).click();
     }
 
     public String find(WebDriver driver, String text) {
