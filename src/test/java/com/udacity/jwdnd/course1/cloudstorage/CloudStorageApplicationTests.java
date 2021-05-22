@@ -136,7 +136,7 @@ class CloudStorageApplicationTests extends WaitPage {
 
 		driver.get(baseURL + "/home");
 		homePage.clickNotesTab(driver);
-		String noteId = homePage.getMostRecentEditNoteId();
+		String noteId = homePage.getMostRecentEditNoteId(driver);
 		homePage.clickEditNoteButton(driver, noteId);
 		homePage.clickSaveNote(driver, editTitle, editDescription);
 
@@ -176,7 +176,7 @@ class CloudStorageApplicationTests extends WaitPage {
 		String noteTitle = homePage.find(driver, title);
 		String noteDescription = homePage.find(driver, description);
 
-		String noteId = homePage.getMostRecentDeleteNoteId();
+		String noteId = homePage.getMostRecentDeleteNoteId(driver);
 		homePage.clickDeleteNote(noteId);
 		boolean successDeleteMsg = homePage.isNoteDisplayed(noteId);
 
@@ -194,7 +194,34 @@ class CloudStorageApplicationTests extends WaitPage {
 	@Test
 	@DisplayName("Test 3.1 - Create credentials and verify they are displayed.")
 	public void testCreatingCredentials() {
+		String url = "www.github.com";
+		String username = "John";
+		String password = "test";
 
+		driver.get(baseURL + "/signup");
+		signupPage.signup("John", "Doe", "John", "test");
+
+		driver.get(baseURL + "/login");
+		loginPage.login(driver, "John", "test");
+
+		driver.get(baseURL + "/home");
+		homePage.clickCredentialsTab(driver);
+		homePage.clickAddCredentials(driver);
+		homePage.clickSaveCredentials(driver, url, username, password);
+		boolean successAddMsg = resultPage.isSuccessMessageDisplayed(driver);
+		resultPage.clickNavLink(driver);
+
+		driver.get(baseURL + "/home");
+		homePage.clickCredentialsTab(driver);
+		String actualUrl = homePage.find(driver, url);
+		String actualUsername = homePage.find(driver, username);
+		String encryptedPassword = homePage.waitForPageSearch(driver, password);
+
+		assertAll("Create credentials",
+				() -> assertTrue(successAddMsg, "The credentials were not added."),
+				() -> assertEquals(url, actualUrl, "The url is incorrect."),
+				() -> assertEquals(username, actualUsername, "The username is incorrect"),
+				() -> assertNull(encryptedPassword, "The password was not encrypted"));
 	}
 
 	@Test
@@ -226,9 +253,8 @@ class CloudStorageApplicationTests extends WaitPage {
 
 		driver.get(baseURL + "/home");
 		homePage.clickCredentialsTab(driver);
-		String originalPassword = homePage.find(driver, password);
 
-		String credentialId = homePage.getMostRecentEditCredentialId();
+		String credentialId = homePage.getMostRecentEditCredentialId(driver);
 		homePage.clickEditCredentialButton(driver, credentialId);
 		homePage.clickSaveCredentials(driver, editUrl, editUsername, editPassword);
 
@@ -238,15 +264,15 @@ class CloudStorageApplicationTests extends WaitPage {
 		homePage.clickCredentialsTab(driver);
 		String actualUrl = homePage.find(driver, newUrl);
 		String actualUsername = homePage.find(driver, newUsername);
-		String actualPassword = homePage.find(driver, newPassword);
+		homePage.clickEditCredentialButton(driver, credentialId);
+		String actualPassword = homePage.getPlainTextPassword(driver);
 
 		assertAll("Edit a credential",
 				() -> assertTrue(successAddMsg, "Credential was not saved."),
 				() -> assertTrue(successEditMsg, "Credential was not edited."),
-				() -> assertEquals(password, originalPassword, "Password is encrypted."),
 				() -> assertEquals(newUrl, actualUrl, "Edited url is incorrect."),
 				() -> assertEquals(newUsername, actualUsername, "Edited username is incorrect."),
-				() -> assertEquals(newPassword, actualPassword, "Edited password is incorrect."));
+				() -> assertEquals(newPassword, actualPassword, "Edited password is incorrect or encrypted."));
 	}
 
 	@Test
@@ -270,24 +296,18 @@ class CloudStorageApplicationTests extends WaitPage {
 
 		driver.get(baseURL + "/home");
 		homePage.clickCredentialsTab(driver);
-		String resultUrl = homePage.find(driver, url);
-		String resultUserName = homePage.find(driver, username);
-		String resultPassword = homePage.find(driver, password);
 
-		String credentialId = homePage.getMostRecentDeleteCredentialId();
+		String credentialId = homePage.getMostRecentDeleteCredentialId(driver);
 		homePage.clickDeleteCredential(credentialId);
-		boolean successDeleteMessage = homePage.isCredentialDisplayed(credentialId);
+		boolean successDeleteMessage = homePage.isCredentialDisplayed(driver, credentialId);
 
 		assertAll("Delete a credential",
 				() -> assertTrue(successAddMessage, "Credential was not added"),
-				() -> assertFalse(successDeleteMessage, "Credential was not deleted"),
-				() -> assertEquals(url, resultUrl, "Credential url was not added"),
-				() -> assertEquals(username, resultUserName, "Credential username was not added"),
-				() -> assertEquals(password, resultPassword, "Credential password was not added"));
+				() -> assertFalse(successDeleteMessage, "Credential was not deleted"));
 	}
 
 	@AfterEach
-	public void afterAll() {
+	public void afterEach() {
 		if (driver != null) {
 			driver.quit();
 		}

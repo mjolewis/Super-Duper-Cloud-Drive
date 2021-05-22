@@ -15,9 +15,11 @@ import java.util.ArrayList;
 @Service
 public class CredentialService implements ServiceType {
     private final CredentialMapper credentialMapper;
+    private final EncryptionService encryptionService;
 
-    public CredentialService(CredentialMapper credentialMapper) {
+    public CredentialService(CredentialMapper credentialMapper, EncryptionService encryptionService) {
         this.credentialMapper = credentialMapper;
+        this.encryptionService = encryptionService;
     }
 
     public ArrayList<Credential> getCredentials(User user) {
@@ -29,15 +31,26 @@ public class CredentialService implements ServiceType {
     }
 
     public boolean insertCredential(Credential credential) {
-        return credentialMapper.insertCredential(credential) > 0;
+        return credentialMapper.insertCredential(encryptPassword(credential)) > 0;
     }
 
     public boolean updateCredentials(Credential credential) {
-        return credentialMapper.updateCredential(credential) == 1;
+        return credentialMapper.updateCredential(encryptPassword(credential)) == 1;
+    }
+
+    private Credential encryptPassword(Credential credential) {
+        if (credential.getKey() == null) {
+            String key = encryptionService.generateKey();
+            credential.setKey(key);
+        }
+
+        String encryptedPassword = encryptionService.encryptValue(credential.getPassword(), credential.getKey());
+        credential.setPassword(encryptedPassword);
+        return credential;
     }
 
     public String decryptPassword(Credential credential) {
-        return credentialMapper.getCredential(credential.getCredentialId()).getPassword();
+        return encryptionService.decryptValue(credential.getPassword(), credential.getKey());
     }
 
     public boolean deleteCredentials(Credential credential) {

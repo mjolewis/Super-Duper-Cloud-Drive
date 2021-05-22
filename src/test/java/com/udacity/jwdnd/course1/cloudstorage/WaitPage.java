@@ -36,6 +36,10 @@ public abstract class WaitPage {
     }
 
     protected boolean isElementDisplayed(WebDriver driver, String elementId) {
-        return waitForElement(driver, elementId).isDisplayed();
+        try {
+            return waitForElement(driver, elementId).isDisplayed();
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 }
