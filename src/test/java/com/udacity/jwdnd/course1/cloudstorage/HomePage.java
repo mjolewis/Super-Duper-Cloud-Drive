@@ -15,31 +15,13 @@ import java.util.List;
  *********************************************************************************************************************/
 public class HomePage extends WaitPage {
 
-    @FindBy(id = "logoutButton")
-    private WebElement logoutButton;
-
-    @FindBy(id = "nav-files-tab")
-    private WebElement navTab;
-
-    @FindBy(id = "fileUpload")
-    private WebElement chooseFile;
-
-    @FindBy(id = "fileUploadButton")
-    private WebElement fileUploadButton;
-
-    @FindBy(id = "viewFileButton")
-    private WebElement viewFileButton;
-
-    @FindBy(id = "deleteFileButton")
-    private WebElement deleteFileButton;
-
     private static final String NAV_NOTES_TAB = "nav-notes-tab";
     @FindBy(id = NAV_NOTES_TAB)
     private WebElement notesTab;
 
     private static final String ADD_NOTE_BTN = "add-note-btn";
     @FindBy(id = ADD_NOTE_BTN)
-    private WebElement addNewNote;
+    private WebElement addNote;
 
     private static final String NOTE_TITLE = "note-title";
     @FindBy(id = NOTE_TITLE)
@@ -61,11 +43,41 @@ public class HomePage extends WaitPage {
     @FindBy(xpath = DELETE_NOTE_BTN)
     private List<WebElement> deleteNoteButtons;
 
-    @FindBy(id = "nav-credentials-tab")
+    private static final String NAV_CREDENTIAL_TAB = "nav-credentials-tab";
+    @FindBy(id = NAV_CREDENTIAL_TAB)
     private WebElement credentialsTab;
 
-    @FindBy(id = "logoutButton")
-    private WebElement logout;
+    private static final String ADD_CREDENTIAL_BTN = "add-credential-btn";
+    @FindBy(id = ADD_CREDENTIAL_BTN)
+    private WebElement addCredential;
+
+    private static final String CREDENTIAL_URL = "credential-url";
+    @FindBy(id = CREDENTIAL_URL)
+    private WebElement credentialUrl;
+
+    private static final String CREDENTIAL_USERNAME = "credential-username";
+    @FindBy(id = CREDENTIAL_USERNAME)
+    private WebElement credentialUsername;
+
+    private static final String CREDENTIAL_PASSWORD = "credential-password";
+    @FindBy(id = CREDENTIAL_PASSWORD)
+    private WebElement credentialPassword;
+
+    private static final String SAVE_CREDENTIALS_BTN = "save-credentials-btn";
+    @FindBy(id = SAVE_CREDENTIALS_BTN)
+    private WebElement saveCredentials;
+
+    private static final String EDIT_CREDENTIALS_BTN = "//button[starts-with(@id, 'btn-edit-credential-')]";
+    @FindBy(xpath = EDIT_CREDENTIALS_BTN)
+    private List<WebElement> editCredentialsButtons;
+
+    private static final String DELETE_CREDENTIALS_BTN = "//a[starts-with(@id, 'btn-delete-credential-')]";
+    @FindBy(xpath = DELETE_CREDENTIALS_BTN)
+    private List<WebElement> deleteCredentialsButtons;
+
+    private static final String LOGOUT_BTN = "logout-btn";
+    @FindBy(id = LOGOUT_BTN)
+    private WebElement logoutButton;
 
     public HomePage(WebDriver driver) {
         PageFactory.initElements(driver, this);
@@ -85,39 +97,59 @@ public class HomePage extends WaitPage {
         waitForElement(driver, SAVE_NOTE_BTN).sendKeys(Keys.ENTER);
     }
 
-    public String getMostRecentNoteId() {
+    public String getMostRecentEditNoteId() {
         return getMostRecentAddedElementId(editNoteButtons);
-    }
-
-    public String getMostRecentDeleteNoteId() {
-        return getMostRecentAddedElementId(deleteNoteButtons);
     }
 
     public void clickEditNoteButton(WebDriver driver, String buttonId) {
         waitForElement(driver, buttonId).click();
     }
 
-    public void clickDeleteNote(String buttonId) {
-        clickButton(deleteNoteButtons, buttonId);
+    public String getMostRecentDeleteNoteId() {
+        return getMostRecentAddedElementId(deleteNoteButtons);
     }
 
-    public boolean isNoteDisplayed(String buttonId) {
-        for (WebElement button : editNoteButtons) {
-            String id = button.getAttribute("id");
-            if (id.equals(buttonId)) {
-                return true;
-            }
-        }
+    public void clickDeleteNote(String noteId) {
+        clickButton(deleteNoteButtons, noteId);
+    }
 
-        return false;
+    public boolean isNoteDisplayed(String noteId) {
+        return isElementDisplayed(editNoteButtons, noteId);
+    }
+
+    public void clickCredentialsTab(WebDriver driver) {
+        waitForElement(driver, NAV_CREDENTIAL_TAB).sendKeys(Keys.ENTER);
+    }
+
+    public void clickAddCredentials(WebDriver driver) {
+        waitForElement(driver, ADD_CREDENTIAL_BTN).sendKeys(Keys.ENTER);
+    }
+
+    public void clickSaveCredentials(WebDriver driver, String url, String userName, String password) {
+        waitForElement(driver, CREDENTIAL_URL).sendKeys(url);
+        waitForElement(driver, CREDENTIAL_USERNAME).sendKeys(userName);
+        waitForElement(driver, CREDENTIAL_PASSWORD).sendKeys(password);
+        waitForElement(driver, SAVE_CREDENTIALS_BTN).sendKeys(Keys.ENTER);
+    }
+
+    public String getMostRecentDeleteCredentialId() {
+        return getMostRecentAddedElementId(deleteCredentialsButtons);
+    }
+
+    public void clickDeleteCredential(String credentialId) {
+        clickButton(deleteCredentialsButtons, credentialId);
+    }
+
+    public boolean isCredentialDisplayed(String credentialId) {
+        return isElementDisplayed(editCredentialsButtons, credentialId);
     }
 
     public String find(WebDriver driver, String text) {
         return waitForPageSearch(driver, text);
     }
 
-    public void logout() {
-        logout.sendKeys(Keys.ENTER);
+    public void logout(WebDriver driver) {
+        waitForElement(driver, LOGOUT_BTN).sendKeys(Keys.ENTER);
     }
 
     private String getMostRecentAddedElementId(List<WebElement> buttons) {
@@ -136,5 +168,16 @@ public class HomePage extends WaitPage {
                 break;
             }
         }
+    }
+
+    private boolean isElementDisplayed(List<WebElement> buttons, String elementId) {
+        for (WebElement button : buttons) {
+            String id = button.getAttribute("id");
+            if (id.equals(elementId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

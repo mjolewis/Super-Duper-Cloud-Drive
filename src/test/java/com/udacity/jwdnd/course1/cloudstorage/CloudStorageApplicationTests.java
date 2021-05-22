@@ -65,7 +65,7 @@ class CloudStorageApplicationTests extends WaitPage {
 	}
 
 	@Test
-	@DisplayName("Test 1.2 - Test registration, login, and logout.")
+	@DisplayName("Test 1.2 - Test signup, login, and logout.")
 	public void testSignUpLoginAndLogout() {
 
 		driver.get(baseURL + "/signup");
@@ -75,7 +75,7 @@ class CloudStorageApplicationTests extends WaitPage {
 		loginPage.login(driver, "John", "test");
 
 		driver.get(baseURL + "/home");
-		homePage.logout();
+		homePage.logout(driver);
 
 		driver.get(baseURL + "/home");
 		String currentUrl = driver.getCurrentUrl();
@@ -134,7 +134,7 @@ class CloudStorageApplicationTests extends WaitPage {
 
 		driver.get(baseURL + "/home");
 		homePage.clickNotesTab(driver);
-		String buttonId = homePage.getMostRecentNoteId();
+		String buttonId = homePage.getMostRecentEditNoteId();
 		homePage.clickEditNoteButton(driver, buttonId);
 		homePage.clickSaveNote(driver, editTitle, editDescription);
 
@@ -167,26 +167,75 @@ class CloudStorageApplicationTests extends WaitPage {
 		homePage.clickNotesTab(driver);
 		homePage.clickAddNote(driver);
 		homePage.clickSaveNote(driver, title, description);
+		boolean successAddMsg = resultPage.isSuccessMessageDisplayed(driver);
 
 		driver.get(baseURL + "/home");
 		homePage.clickNotesTab(driver);
 		String noteTitle = homePage.find(driver, title);
 		String noteDescription = homePage.find(driver, description);
 
-		String buttonId = homePage.getMostRecentDeleteNoteId();
-		homePage.clickDeleteNote(buttonId);
-		boolean successMessage = resultPage.isSuccessMessageDisplayed(driver);
+		String noteId = homePage.getMostRecentDeleteNoteId();
+		homePage.clickDeleteNote(noteId);
+		boolean successDeleteMsg = homePage.isNoteDisplayed(noteId);
 
 		resultPage.clickNavLink(driver);
 		driver.get(baseURL + "/home");
 		homePage.clickNotesTab(driver);
-		boolean successfulDelete = homePage.isNoteDisplayed(buttonId);
 
 		assertAll("Delete a note",
-				() -> assertTrue(successMessage, "Success message was not displayed"),
-				() -> assertFalse(successfulDelete, "Note was not deleted."),
+				() -> assertTrue(successAddMsg, "Success message was not displayed"),
+				() -> assertFalse(successDeleteMsg, "Note was not deleted."),
 				() -> assertEquals(title, noteTitle, "Note title was never added"),
 				() -> assertEquals(description, noteDescription, "Note description was never added"));
+	}
+
+	@Test
+	@DisplayName("Test 3.1 - Create credentials and verify they are displayed.")
+	public void testCreatingCredentials() {
+
+	}
+
+	@Test
+	@DisplayName("Test 3.2 - View and edit existing credentials")
+	public void testEditCredentials() {
+
+	}
+
+	@Test
+	@DisplayName("Test 3.3 - Delete existing credentials and verify they no longer exist")
+	public void testDeleteCredentials() {
+		String url = "www.github.com";
+		String username = "John";
+		String password = "test";
+
+		driver.get(baseURL + "/signup");
+		signupPage.signup("John", "Doe", "John", "test");
+
+		driver.get(baseURL + "/login");
+		loginPage.login(driver, "John", "test");
+
+		driver.get(baseURL + "/home");
+		homePage.clickCredentialsTab(driver);
+		homePage.clickAddCredentials(driver);
+		homePage.clickSaveCredentials(driver, url, username, password);
+		boolean successAddMessage = resultPage.isSuccessMessageDisplayed(driver);
+
+		driver.get(baseURL + "/home");
+		homePage.clickCredentialsTab(driver);
+		String resultUrl = homePage.find(driver, url);
+		String resultUserName = homePage.find(driver, username);
+		String resultPassword = homePage.find(driver, password);
+
+		String credentialId = homePage.getMostRecentDeleteCredentialId();
+		homePage.clickDeleteCredential(credentialId);
+		boolean successDeleteMessage = homePage.isCredentialDisplayed(credentialId);
+
+		assertAll("Delete a credential",
+				() -> assertTrue(successAddMessage, "Credential was not added"),
+				() -> assertFalse(successDeleteMessage, "Credential was not deleted"),
+				() -> assertEquals(url, resultUrl, "Credential url was not added"),
+				() -> assertEquals(username, resultUserName, "Credential username was not added"),
+				() -> assertEquals(password, resultPassword, "Credential password was not added"));
 	}
 
 	@AfterEach
