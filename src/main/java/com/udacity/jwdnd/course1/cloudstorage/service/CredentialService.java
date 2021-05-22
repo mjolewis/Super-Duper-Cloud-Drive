@@ -36,6 +36,10 @@ public class CredentialService implements ServiceType {
         return credentialMapper.updateCredential(credential) == 1;
     }
 
+    public String decryptPassword(Credential credential) {
+        return credentialMapper.getCredential(credential.getCredentialId()).getPassword();
+    }
+
     public boolean deleteCredentials(Credential credential) {
         return credentialMapper.deleteCredential(credential) == 1;
     }
