@@ -205,7 +205,21 @@
                 $('#credential-id').val(credentialId ? credentialId : '');
                 $('#credential-url').val(url ? url : '');
                 $('#credential-username').val(username ? username : '');
-                $('#credential-password').val(password ? password : '');
+
+                // Display encrypted password if the current user is not the owner of the credential
+                if (password) {
+                    $('#credential-password').val(password ? password : '');
+
+                    fetch('/credentials/decrypt?credentialId=' + credentialId)
+                        .then(function (response) {
+                            $('#credential-password').val(response);
+                        }).catch(function () {
+                            $('#credential-password').val('');
+                        })
+                } else {
+                    $('#credential-password').val('');
+                }
+
                 $('#credentialModal').modal('show');
             }
 

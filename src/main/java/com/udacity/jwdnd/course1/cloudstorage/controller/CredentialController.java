@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**********************************************************************************************************************
  * Handles client requests to edit or delete login credentials.
  *
@@ -26,6 +31,7 @@ public class CredentialController {
     private final ValidationService validationService;
     private final CredentialService credentialService;
     private final ResponseService responseService;
+    private static final Logger LOGGER = Logger.getLogger(CredentialController.class.getName());
 
     public CredentialController(UserService userService, ValidationService validationService,
                                 CredentialService credentialService, ResponseService responseService) {
@@ -53,6 +59,25 @@ public class CredentialController {
         }
 
         return responseService.createResponse(result, model, user, credentialService);
+    }
+
+    @PostMapping("/decrypt")
+    public void doDecryptCredentials(HttpServletResponse response, Authentication authentication,
+                                     @ModelAttribute Credential credential) {
+        User user = getCurrentUser(authentication);
+        credential = credentialService.getCredential(credential.getCredentialId());
+
+        boolean result = validationService.validate(credential, user);
+        if (result) {
+            String decryptedPassword = credentialService.decryptPassword(credential);
+
+            try {
+                response.getWriter().println(decryptedPassword);
+            } catch (IOException e) {
+                LOGGER.setLevel(Level.SEVERE);
+                LOGGER.severe(e.toString());
+            }
+        }
     }
 
     @GetMapping("/delete")

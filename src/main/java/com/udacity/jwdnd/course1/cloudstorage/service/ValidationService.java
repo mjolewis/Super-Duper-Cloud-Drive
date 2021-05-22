@@ -29,4 +29,16 @@ public class ValidationService {
 
         return result;
     }
+
+    public boolean validate(CloudStorageServiceObjet obj, User user) {
+        boolean result = true;
+
+        if (obj == null) {
+            result = false;
+        } else if (obj.getUserId().intValue() != user.getUserId().intValue()) {
+            result = false;
+        }
+
+        return result;
+    }
 }
