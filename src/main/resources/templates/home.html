@@ -200,26 +200,40 @@
                 $('#noteModal').modal('show');
             }
 
+            // // For opening the credentials modal
+            // function showCredentialModal(credentialId, url, username, password) {
+            //     $('#credential-id').val(credentialId ? credentialId : '');
+            //     $('#credential-url').val(url ? url : '');
+            //     $('#credential-username').val(username ? username : '');
+            //
+            //     // Display encrypted password if the current user is not the owner of the credential
+            //     if (password) {
+            //         fetch('/credentials/decrypt?credentialId=' + credentialId)
+            //             .then(response =>
+            //                 console.log(response))
+            //                 //$('#credential-password').val(response.password))
+            //             .catch(() =>
+            //                 $('#credential-password').val('error'));
+            //     } else {
+            //         $('#credential-password').val('');
+            //     }
+            //
+            //     $('#credentialModal').modal('show');
+            // }
+
             // For opening the credentials modal
             function showCredentialModal(credentialId, url, username, password) {
                 $('#credential-id').val(credentialId ? credentialId : '');
                 $('#credential-url').val(url ? url : '');
                 $('#credential-username').val(username ? username : '');
-
-                // Display encrypted password if the current user is not the owner of the credential
                 if (password) {
-                    $('#credential-password').val(password ? password : '');
-
-                    fetch('/credentials/decrypt?credentialId=' + credentialId)
-                        .then(function (response) {
-                            $('#credential-password').val(response);
-                        }).catch(function () {
-                            $('#credential-password').val('');
-                        })
+                    var ajx = new XMLHttpRequest();
+                    ajx.open("GET", "/credentials/decrypt?credentialId=" + credentialId);
+                    ajx.onload = function() {$('#credential-password').val(`${ajx.response}`);};
+                    ajx.send();
                 } else {
                     $('#credential-password').val('');
                 }
-
                 $('#credentialModal').modal('show');
             }
 

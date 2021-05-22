@@ -102,7 +102,7 @@ public class HomePage extends WaitPage {
     }
 
     public void clickEditNoteButton(WebDriver driver, String buttonId) {
-        waitForElement(driver, buttonId).click();
+        waitForElement(driver, buttonId).sendKeys(Keys.ENTER);
     }
 
     public String getMostRecentDeleteNoteId() {
@@ -132,16 +132,24 @@ public class HomePage extends WaitPage {
         waitForElement(driver, SAVE_CREDENTIALS_BTN).sendKeys(Keys.ENTER);
     }
 
+    public String getMostRecentEditCredentialId() {
+        return getMostRecentAddedElementId(editCredentialsButtons);
+    }
+
+    public void clickEditCredentialButton(WebDriver driver, String buttonId) {
+        waitForElement(driver, buttonId).sendKeys(Keys.ENTER);
+    }
+
+    public boolean isCredentialDisplayed(String credentialId) {
+        return isElementDisplayed(editCredentialsButtons, credentialId);
+    }
+
     public String getMostRecentDeleteCredentialId() {
         return getMostRecentAddedElementId(deleteCredentialsButtons);
     }
 
     public void clickDeleteCredential(String credentialId) {
         clickButton(deleteCredentialsButtons, credentialId);
-    }
-
-    public boolean isCredentialDisplayed(String credentialId) {
-        return isElementDisplayed(editCredentialsButtons, credentialId);
     }
 
     public String find(WebDriver driver, String text) {
