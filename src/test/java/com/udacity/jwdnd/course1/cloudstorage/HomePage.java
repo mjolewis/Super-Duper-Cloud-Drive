@@ -35,6 +35,10 @@ public class HomePage extends WaitPage {
     @FindBy(id = SAVE_NOTE_BTN)
     private WebElement saveNote;
 
+    private static final String NOTE_TABLE = "noteTable";
+    @FindBy(id = NOTE_TABLE)
+    private WebElement noteTable;
+
     private static final String EDIT_NOTE_BTN = "//button[starts-with(@id, 'btn-edit-note-')]";
     @FindBy(xpath = EDIT_NOTE_BTN)
     private List<WebElement> editNoteButtons;
@@ -67,6 +71,10 @@ public class HomePage extends WaitPage {
     @FindBy(id = SAVE_CREDENTIALS_BTN)
     private WebElement saveCredentials;
 
+    private static final String CREDENTIAL_TABLE = "credentialTable";
+    @FindBy(id = CREDENTIAL_TABLE)
+    private WebElement credentialTable;
+
     private static final String EDIT_CREDENTIALS_BTN = "//button[starts-with(@id, 'btn-edit-credential-')]";
     @FindBy(xpath = EDIT_CREDENTIALS_BTN)
     private List<WebElement> editCredentialsButtons;
@@ -97,7 +105,8 @@ public class HomePage extends WaitPage {
         waitForElement(driver, SAVE_NOTE_BTN).sendKeys(Keys.ENTER);
     }
 
-    public String getMostRecentEditNoteId() {
+    public String getMostRecentEditNoteId(WebDriver driver) {
+        waitForElement(driver, NOTE_TABLE);
         return getMostRecentAddedElementId(editNoteButtons);
     }
 
@@ -105,7 +114,8 @@ public class HomePage extends WaitPage {
         waitForElement(driver, buttonId).sendKeys(Keys.ENTER);
     }
 
-    public String getMostRecentDeleteNoteId() {
+    public String getMostRecentDeleteNoteId(WebDriver driver) {
+        waitForElement(driver, NOTE_TABLE);
         return getMostRecentAddedElementId(deleteNoteButtons);
     }
 
@@ -132,7 +142,8 @@ public class HomePage extends WaitPage {
         waitForElement(driver, SAVE_CREDENTIALS_BTN).sendKeys(Keys.ENTER);
     }
 
-    public String getMostRecentEditCredentialId() {
+    public String getMostRecentEditCredentialId(WebDriver driver) {
+        waitForElement(driver, CREDENTIAL_TABLE);
         return getMostRecentAddedElementId(editCredentialsButtons);
     }
 
@@ -140,11 +151,21 @@ public class HomePage extends WaitPage {
         waitForElement(driver, buttonId).sendKeys(Keys.ENTER);
     }
 
-    public boolean isCredentialDisplayed(String credentialId) {
-        return isElementDisplayed(editCredentialsButtons, credentialId);
+    public boolean isCredentialDisplayed(WebDriver driver, String credentialId) {
+        boolean isDisplayed = isElementDisplayed(driver, CREDENTIAL_TABLE);
+        if (isDisplayed) {
+            return isElementDisplayed(editCredentialsButtons, credentialId);
+        }
+
+        return isDisplayed;
     }
 
-    public String getMostRecentDeleteCredentialId() {
+    public String getPlainTextPassword(WebDriver driver) {
+        return waitForElement(driver, CREDENTIAL_PASSWORD).getAttribute("value");
+    }
+
+    public String getMostRecentDeleteCredentialId(WebDriver driver) {
+        waitForElement(driver, CREDENTIAL_TABLE);
         return getMostRecentAddedElementId(deleteCredentialsButtons);
     }
 

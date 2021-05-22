@@ -14,12 +14,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**********************************************************************************************************************
  * Handles client requests to edit or delete login credentials.
@@ -33,7 +32,7 @@ public class CredentialController {
     private final ValidationService validationService;
     private final CredentialService credentialService;
     private final ResponseService responseService;
-    private static final Logger LOGGER = Logger.getLogger(CredentialController.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(CredentialController.class.getName());
 
     public CredentialController(UserService userService, ValidationService validationService,
                                 CredentialService credentialService, ResponseService responseService) {
