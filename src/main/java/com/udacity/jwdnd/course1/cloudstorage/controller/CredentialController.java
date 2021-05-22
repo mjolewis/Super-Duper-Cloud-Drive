@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,7 +55,7 @@ public class CredentialController {
             Credential existingCredential = credentialService.getCredential(credential.getCredentialId());
             result = validationService.validate(existingCredential, user, model, "update");
             if (result) {
-                credential.setUserId(user.getUserId());
+                //credential.setUserId(user.getUserId());
                 result = credentialService.updateCredentials(credential);
             }
         }
@@ -61,9 +63,9 @@ public class CredentialController {
         return responseService.createResponse(result, model, user, credentialService);
     }
 
-    @PostMapping("/decrypt")
-    public void doDecryptCredentials(HttpServletResponse response, Authentication authentication,
-                                     @ModelAttribute Credential credential) {
+    @GetMapping("/decrypt")
+    public void doGet(HttpServletResponse response,Authentication authentication,
+                                     @ModelAttribute Credential credential) throws IOException {
         User user = getCurrentUser(authentication);
         credential = credentialService.getCredential(credential.getCredentialId());
 
@@ -71,11 +73,9 @@ public class CredentialController {
         if (result) {
             String decryptedPassword = credentialService.decryptPassword(credential);
 
-            try {
-                response.getWriter().println(decryptedPassword);
-            } catch (IOException e) {
-                LOGGER.setLevel(Level.SEVERE);
-                LOGGER.severe(e.toString());
+            try (PrintWriter out = response.getWriter()) {
+                out.println(decryptedPassword);
+                out.flush();
             }
         }
     }

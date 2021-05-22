@@ -117,8 +117,10 @@ class CloudStorageApplicationTests extends WaitPage {
 	public void testEditNote() {
 		String title = "Test Title";
 		String description = "Test description.";
+
 		String editTitle = "Edit Title";
 		String editDescription = "Edit description";
+
 		String newTitle = title + editTitle;
 		String newDescription = description + editDescription;
 
@@ -134,11 +136,11 @@ class CloudStorageApplicationTests extends WaitPage {
 
 		driver.get(baseURL + "/home");
 		homePage.clickNotesTab(driver);
-		String buttonId = homePage.getMostRecentEditNoteId();
-		homePage.clickEditNoteButton(driver, buttonId);
+		String noteId = homePage.getMostRecentEditNoteId();
+		homePage.clickEditNoteButton(driver, noteId);
 		homePage.clickSaveNote(driver, editTitle, editDescription);
 
-		boolean result = resultPage.isSuccessMessageDisplayed(driver);
+		boolean successEditMsg = resultPage.isSuccessMessageDisplayed(driver);
 		resultPage.clickNavLink(driver);
 		driver.get(baseURL + "/home");
 		homePage.clickNotesTab(driver);
@@ -146,7 +148,7 @@ class CloudStorageApplicationTests extends WaitPage {
 		String actualDescription = homePage.find(driver, newDescription);
 
 		assertAll("Edit a note",
-				() -> assertTrue(result, "Note was not saved."),
+				() -> assertTrue(successEditMsg, "Note was not saved."),
 				() -> assertEquals(newTitle, actualTitle, "Edited title is incorrect."),
 				() -> assertEquals(newDescription, actualDescription, "Edited description is incorrect"));
 	}
@@ -198,7 +200,53 @@ class CloudStorageApplicationTests extends WaitPage {
 	@Test
 	@DisplayName("Test 3.2 - View and edit existing credentials")
 	public void testEditCredentials() {
+		String url = "www.github.com";
+		String username = "John";
+		String password = "test";
 
+		String editUrl = "/mjolewis/Super-Duper-Cloud-Drive";
+		String editUsername = "James";
+		String editPassword = "1234";
+
+		String newUrl = url + editUrl;
+		String newUsername = username + editUsername;
+		String newPassword = password + editPassword;
+
+		driver.get(baseURL + "/signup");
+		signupPage.signup("John", "Doe", "John", "test");
+
+		driver.get(baseURL + "/login");
+		loginPage.login(driver, "John", "test");
+
+		driver.get(baseURL + "/home");
+		homePage.clickCredentialsTab(driver);
+		homePage.clickAddCredentials(driver);
+		homePage.clickSaveCredentials(driver, url, username, password);
+		boolean successAddMsg = resultPage.isSuccessMessageDisplayed(driver);
+
+		driver.get(baseURL + "/home");
+		homePage.clickCredentialsTab(driver);
+		String originalPassword = homePage.find(driver, password);
+
+		String credentialId = homePage.getMostRecentEditCredentialId();
+		homePage.clickEditCredentialButton(driver, credentialId);
+		homePage.clickSaveCredentials(driver, editUrl, editUsername, editPassword);
+
+		boolean successEditMsg = resultPage.isSuccessMessageDisplayed(driver);
+		resultPage.clickNavLink(driver);
+		driver.get(baseURL + "/home");
+		homePage.clickCredentialsTab(driver);
+		String actualUrl = homePage.find(driver, newUrl);
+		String actualUsername = homePage.find(driver, newUsername);
+		String actualPassword = homePage.find(driver, newPassword);
+
+		assertAll("Edit a credential",
+				() -> assertTrue(successAddMsg, "Credential was not saved."),
+				() -> assertTrue(successEditMsg, "Credential was not edited."),
+				() -> assertEquals(password, originalPassword, "Password is encrypted."),
+				() -> assertEquals(newUrl, actualUrl, "Edited url is incorrect."),
+				() -> assertEquals(newUsername, actualUsername, "Edited username is incorrect."),
+				() -> assertEquals(newPassword, actualPassword, "Edited password is incorrect."));
 	}
 
 	@Test
