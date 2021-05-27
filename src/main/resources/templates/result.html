@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/bootstrap.min.css}">
 
-        <title>Result</title>
-    </head>
-    <body class="p-3 mb-2 bg-light text-black">
-        <div class="container justify-content-center w-50 p-3" style="margin-top: 5em;">
-            <div id="success-message" th:if="${success}"  class="alert alert-success fill-parent">
-                <h1 class="display-5">Success</h1>
-                <span>Your changes were successfully saved. Click <a id="nav-link" th:href="${nav}">here</a> to continue.</span>
-            </div>
-            <div id="error-message" th:unless="${success}" class="alert alert-danger fill-parent">
-                <h1 class="display-5">Error</h1>
-                <span>Your changes were not saved. Click <a id="nav-link" th:href="${nav}">here</a> to continue.</span>
-            </div>
-        </div>
-    </body>
+    <title>Result</title>
+</head>
+<body class="p-3 mb-2 bg-light text-black">
+<div class="container justify-content-center w-50 p-3" style="margin-top: 5em;">
+    <div id="success-message" th:if="${success}" class="alert alert-success fill-parent">
+        <h1 class="display-5">Success</h1>
+        <span>Your changes were successfully saved. Click <a id="nav-link" th:href="${nav}">here</a> to continue.</span>
+    </div>
+    <div id="error-message" th:unless="${success}" class="alert alert-danger fill-parent">
+        <h1 class="display-5">Error</h1>
+        <span th:if="${characterLimit}" >Exceeded character limits. Titles must be less than or equal to 20 characters. Descriptions must be less than or equal to 1000 characters. Click <a id="nav-link" th:href="${nav}">here</a> to continue.</span>
+        <span th:if="${uploadFailed}">Please select a file to upload. Click <a id="nav-link" th:href="${nav}">here</a> to continue.</span>
+        <span th:if="${fileSizeExceeded}">File size exceeded. Limit is 5MB. Click <a id="nav-link" th:href="${nav}">here</a> to continue.</span>
+        <span th:if="${success eq false and applicationEdgeCaseErrorMessage eq false}">Your changes were not saved. Click <a id="nav-link" th:href="${nav}">here</a> to continue.</span>
+    </div>
+</div>
+</body>
 </html>

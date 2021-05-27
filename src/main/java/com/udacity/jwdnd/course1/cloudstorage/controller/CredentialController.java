@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +64,8 @@ public class CredentialController {
     }
 
     @GetMapping("/decrypt")
-    public void doGet(HttpServletResponse response,Authentication authentication,
-                                     @ModelAttribute Credential credential) throws IOException {
+    public void doGet(HttpServletResponse response, Authentication authentication,
+                      @ModelAttribute Credential credential) throws IOException {
         User user = getCurrentUser(authentication);
         credential = credentialService.getCredential(credential.getCredentialId());
 

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**********************************************************************************************************************
  * This controller handles signup requests. It depends on the userService to check if the username provided already
@@ -30,7 +31,7 @@ public class SignupController {
     }
 
     @PostMapping
-    public String signup(@ModelAttribute User user, Model model) {
+    public String signup(@ModelAttribute User user, Model model, RedirectAttributes redirectAttributes) {
         String signupError = null;
 
         if (!userService.isUserNameAvailable(user.getUsername())) {
@@ -46,10 +47,11 @@ public class SignupController {
 
         if (signupError == null) {
             model.addAttribute("signupSuccess", true);
-        } else  {
-            model.addAttribute("signupError", signupError);
+            redirectAttributes.addFlashAttribute("message", "Account created!");
+            return "redirect:/login";
         }
 
+        model.addAttribute("signupError", signupError);
         return "signup";
     }
 }

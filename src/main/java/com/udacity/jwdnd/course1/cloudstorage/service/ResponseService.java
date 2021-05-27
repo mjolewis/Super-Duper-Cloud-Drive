@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
  *********************************************************************************************************************/
 @Service
 public class ResponseService {
+
     public String createResponse(boolean result, Model model, User user, FileService service) {
         model.addAttribute(service.getServiceType(), service.getFiles(user));
         return createResponse(result, model, service.getServiceType());
@@ -29,7 +30,28 @@ public class ResponseService {
 
     private String createResponse(boolean result, Model model, String serviceType) {
         model.addAttribute("success", result);
+        model.addAttribute("applicationEdgeCaseErrorMessage", false);
         model.addAttribute("nav", "/home#nav-" + serviceType);
+        return "result";
+    }
+
+    public String createUploadFailed(boolean result, Model model, FileService service) {
+        model.addAttribute("uploadFailed", result);
+        model.addAttribute("applicationEdgeCaseErrorMessage", true);
+        model.addAttribute("nav", "/home#nav-" + service.getServiceType());
+        return "result";
+    }
+
+    public String createExceedCharacterLimitResponse(boolean result, Model model, NoteService service) {
+        model.addAttribute("characterLimit", result);
+        model.addAttribute("applicationEdgeCaseErrorMessage", true);
+        model.addAttribute("nav", "/home#nav-" + service.getServiceType());
+        return "result";
+    }
+
+    public String createExceedFileSizeError(boolean result, Model model) {
+        model.addAttribute("fileSizeExceeded", result);
+        model.addAttribute("applicationEdgeCaseErrorMessage", true);
         return "result";
     }
 }

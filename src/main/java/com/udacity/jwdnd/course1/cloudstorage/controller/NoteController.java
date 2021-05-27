@@ -39,20 +39,25 @@ public class NoteController {
     public String editNote(Authentication authentication, @ModelAttribute Note note, Model model) {
         User user = getCurrentUser(authentication);
 
-        boolean result;
-        if (note.getNoteId() == null) {
-            note.setUserId(user.getUserId());
-            result = noteService.insertNote(note);
+        // Prevent SQLDataException
+        if (note.getNoteTitle().length() > 20 || note.getNoteDescription().length() > 1000) {
+            return responseService.createExceedCharacterLimitResponse(true, model, noteService);
         } else {
-            Note existingNote = noteService.getNote(note.getNoteId());
-            result = validationService.validate(existingNote, user, model, "update");
-            if (result) {
+            boolean result;
+            if (note.getNoteId() == null) {
                 note.setUserId(user.getUserId());
-                result = noteService.updateNote(note);
+                result = noteService.insertNote(note);
+            } else {
+                Note existingNote = noteService.getNote(note.getNoteId());
+                result = validationService.validate(existingNote, user, model, "update");
+                if (result) {
+                    note.setUserId(user.getUserId());
+                    result = noteService.updateNote(note);
+                }
             }
-        }
 
-        return responseService.createResponse(result, model, user, noteService);
+            return responseService.createResponse(result, model, user, noteService);
+        }
     }
 
     @GetMapping("/delete")

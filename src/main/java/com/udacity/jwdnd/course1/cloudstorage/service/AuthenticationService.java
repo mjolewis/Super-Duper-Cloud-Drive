@@ -28,6 +28,7 @@ public class AuthenticationService implements AuthenticationProvider {
 
     /**
      * Checks the user's hashed password with the newly hashed value from the user input to see if the two match.
+     *
      * @param authentication A Spring Authentication object.
      * @return An authentication token.
      * @throws AuthenticationException

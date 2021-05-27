@@ -96,7 +96,8 @@ public class HomePage extends WaitPage {
     }
 
     public void clickAddNote(WebDriver driver) {
-        waitForElement(driver, ADD_NOTE_BTN).sendKeys(Keys.ENTER);;
+        waitForElement(driver, ADD_NOTE_BTN).sendKeys(Keys.ENTER);
+        ;
     }
 
     public void clickSaveNote(WebDriver driver, String title, String description) {

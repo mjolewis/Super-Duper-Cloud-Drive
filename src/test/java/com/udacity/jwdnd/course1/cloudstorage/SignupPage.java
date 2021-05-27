@@ -31,6 +31,7 @@ public class SignupPage {
 
     /**
      * Constructor starts the process of allowing Selenium to automatically process the element selectors.
+     *
      * @param driver A browser driver instance.
      */
     public SignupPage(WebDriver driver) {

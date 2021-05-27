@@ -14,11 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.text.StringEscapeUtils;
 
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**********************************************************************************************************************
- * Handles client requests to insert and delete files.
+ * The FileUploadController handles client requests to insert and delete files.
+ *
+ * @note Max file size of 5MB.
  *
  * @author Michael Lewis
  *********************************************************************************************************************/
@@ -41,19 +44,24 @@ public class FileUploadController {
     @PostMapping()
     public String uploadFile(Authentication authentication, @RequestParam("fileUpload") MultipartFile multiPartFile, Model model) {
         User user = getCurrentUser(authentication);
-        SuperDuperFile superDuperFile = fileService.prepareFileForUpload(multiPartFile, user);
 
-        boolean result = validationService.validate(superDuperFile, user, model, "insert");
-        if (result) {
-            try {
-                result = fileService.insertFile(superDuperFile);
-            } catch (InvalidFileNameException e) {
-                result = false;
-                model.addAttribute("message", e.getMessage());
+        // Prevent users from uploading an empty file.
+        if (multiPartFile.isEmpty()) {
+            return responseService.createUploadFailed(true, model, fileService);
+        } else {
+            SuperDuperFile superDuperFile = fileService.prepareFileForUpload(multiPartFile, user);
+            boolean result = validationService.validate(superDuperFile, user, model, "insert");
+            if (result) {
+                try {
+                    result = fileService.insertFile(superDuperFile);
+                } catch (InvalidFileNameException e) {
+                    result = false;
+                    model.addAttribute("message", e.getMessage());
+                }
             }
-        }
 
-        return responseService.createResponse(result, model, user, fileService);
+            return responseService.createResponse(result, model, user, fileService);
+        }
     }
 
     @GetMapping("/download")
@@ -63,7 +71,7 @@ public class FileUploadController {
         User currentUser = userService.getUser(authentication.getName());
         file = fileService.getFile(file.getFileId());
 
-        boolean result = validationService.validate(file, currentUser, model,"download");
+        boolean result = validationService.validate(file, currentUser, model, "download");
 
         if (result) {
             response.setContentType(file.getContentType());

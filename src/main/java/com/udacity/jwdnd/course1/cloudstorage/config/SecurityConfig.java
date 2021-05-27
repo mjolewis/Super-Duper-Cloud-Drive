@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login")
                 .permitAll();
 
-        // automatically redirect successful logins to the chat endpoint
+        // automatically redirect successful logins to the home endpoint
         http.formLogin()
                 .defaultSuccessUrl("/home", true);
 

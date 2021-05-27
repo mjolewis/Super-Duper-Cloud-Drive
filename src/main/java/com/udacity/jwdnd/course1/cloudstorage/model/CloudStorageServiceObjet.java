@@ -7,5 +7,6 @@ package com.udacity.jwdnd.course1.cloudstorage.model;
  *********************************************************************************************************************/
 public interface CloudStorageServiceObjet {
     String getType();
+
     Integer getUserId();
 }
